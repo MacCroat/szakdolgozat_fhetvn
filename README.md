@@ -1,0 +1,2 @@
+# szakdolgozat_fhetvn
+ 
