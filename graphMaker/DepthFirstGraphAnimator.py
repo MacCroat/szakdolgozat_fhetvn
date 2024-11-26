@@ -25,9 +25,10 @@ class DepthFirstGraphAnimator(GraphAnimator):
 
         while stack:
             current_node = stack.pop()
-            self.node_states[current_node] = 'red'
 
             highlight_line = 4 if current_node != self.goal_node else 5
+
+            self.node_states[current_node] = 'red'
 
             frame_filename = f'{self.frames_dir}/frame_{frame_id}.png'
             self.create_frame(frame_filename, highlight_line)
@@ -36,4 +37,12 @@ class DepthFirstGraphAnimator(GraphAnimator):
             if current_node == self.goal_node:
                 self.node_states[current_node] = 'black'
                 frame_filename = f'{self.frames_dir}/frame_{frame_id}.png'
-                self.create_fra
+                self.create_frame(frame_filename, 5)
+                break
+
+            self.node_states[current_node] = 'black'
+            self.visited.add(current_node)
+
+            for child in reversed(self.children.get(current_node, [])):
+                if child not in self.visited and child not in stack:
+                    stack.append(child)
