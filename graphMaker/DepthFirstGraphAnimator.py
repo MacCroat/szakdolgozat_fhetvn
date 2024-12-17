@@ -3,19 +3,23 @@ from graphMaker.GraphAnimator import GraphAnimator
 class DepthFirstGraphAnimator(GraphAnimator):
     def __init__(self, start_node, goal_node, children):
         pseudocode = [
-            "StartNode := k",
-            "OpenList := {StartNode}",
-            "ClosedList := {}",
-            "While OpenList is not empty do",
-            "  CurrentNode := OpenList.pop()",
-            "  If CurrentNode == Goal then return Success",
-            "  Mark CurrentNode as visited",
-            "  For each child of CurrentNode do",
-            "      If child is not visited then",
-            "          Add child to OpenList",
-            "  Add CurrentNode to ClosedList",
-            "End While",
-            "Return Failure"
+            "Startcsúcs := k",
+            "M (Startcsúcs) := 0",
+            "Sz (Startcsúcs) := nincs",
+            "Nyílt := {Startcsúcs}",
+            "Zárt := {}",
+            "While Nyílt nem üres do",
+            "   Legyen C eleme Nyílt uh. M(C) = Max{M(D) | D eleme Nyílt}",
+            "   if C eleme V then return C",
+            "   for C minden D gyermekére do",
+            "       if D nem eleme Nyílt és D nem eleme Zárt then",
+            "           M(D) := M(C)+1",
+            "           Sz(D) := C",
+            "           Nyílt := Nyílt U {D}",
+            "   Nyílt := Nyílt \\ {C}",
+            "   Zárt := Zárt U {C}",
+            "od",
+            "return „Nincs megoldás”"
         ]
         super().__init__(pseudocode, start_node, goal_node, children)
 

@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import os
 from PIL import Image
 from abc import ABC, abstractmethod
-import shutil
 
 class GraphAnimator(ABC):
     def __init__(self, pseudocode, start_node, goal_node, children):
@@ -44,10 +43,8 @@ class GraphAnimator(ABC):
         pass
 
     def create_frame(self, filename, highlight_line=None):
-        # Create a new figure with explicit axes
         fig, ax = plt.subplots(figsize=(8, 10))
 
-        # Draw the graph
         nx.draw(
             self.graph,
             self.pos,
@@ -61,18 +58,26 @@ class GraphAnimator(ABC):
             arrows=True
         )
 
-        # Add pseudocode
+        start_y = 0.7
+        line_spacing = 0.03
+        font_size = 10
+
         for i, line in enumerate(self.pseudocode):
             color = 'red' if i == highlight_line else 'black'
-            ax.text(1.1, 1 - i * 0.08, line, fontsize=12, color=color, family='monospace', va='top', transform=ax.transAxes)
+            ax.text(
+                1.3, start_y - i * line_spacing,
+                line,
+                fontsize=font_size,
+                color=color,
+                family='monospace',
+                va='top',
+                transform=ax.transAxes
+            )
 
-        # Remove axis
         ax.axis("off")
-
-        # Save the figure
         plt.tight_layout()
         plt.savefig(filename, bbox_inches="tight")
-        plt.close(fig)  # Close the figure to free up memory
+        plt.close(fig)
         self.frames.append(filename)
 
     def save_gif(self, search_type=''):
