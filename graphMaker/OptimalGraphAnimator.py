@@ -33,109 +33,105 @@ class OptimalGraphAnimator(GraphAnimator):
         self.g_values[start_node] = 0
 
     def _create_collection_renderer(self):
-        return QueueRenderer()  # Changed from StackRenderer
+        return QueueRenderer()
 
-    def _create_and_save_frame(self, frame_id, highlight_line, open_collection=None):
-        frame_filename = f"{self.frames_dir}/frame_{frame_id:04d}.png"
-        memory_state = {"Nyílt": open_collection} if open_collection is not None else None
-        self.create_frame(frame_filename, highlight_line, memory_state=memory_state)
+    def _prepare_memory_state(self, collection_items=None):
+        if collection_items is None:
+            return None
+
+        return {"Nyílt": collection_items, "Zárt": self.closed_set}
 
     def generate_animation(self):
         open_list = [(self.g_values[self.start_node], self.start_node)]
         open_set = {self.start_node}
-        closed_set = set()
-        frame_id = 0
+        self.closed_set = set()
+        self.frame_id = 0
 
         self.node_states[self.start_node] = 'blue'
 
-        self._create_and_save_frame(frame_id, highlight_line=0, open_collection=[self.start_node])
-        frame_id += 1
+        self._highlight_pseudocode_lines(range(5))
 
         while open_list:
             open_nodes = [n for _, n in open_list]
-
-            self._create_and_save_frame(frame_id, highlight_line=5, open_collection=open_nodes)
-            frame_id += 1
+            self._create_frame(highlight_line=5, collection_items=open_nodes)
+            self.frame_id += 1
 
             open_list.sort(key=lambda x: x[0])
             g_value, current_node = open_list.pop(0)
             open_set.remove(current_node)
-
             self.node_states[current_node] = 'red'
 
             open_nodes = [n for _, n in open_list]
-            self._create_and_save_frame(frame_id, highlight_line=6, open_collection=open_nodes)
-            frame_id += 1
+            self._create_frame(highlight_line=6, collection_items=open_nodes)
+            self.frame_id += 1
 
             if current_node == self.goal_node:
-                self._create_and_save_frame(frame_id, highlight_line=7, open_collection=open_nodes)
-                frame_id += 1
+                self._create_frame(highlight_line=7, collection_items=open_nodes)
+                self.frame_id += 1
                 self.node_states[current_node] = 'green'
-                self._create_and_save_frame(frame_id, highlight_line=7, open_collection=open_nodes)
-                frame_id += 1
+                self._create_frame(highlight_line=7, collection_items=open_nodes)
                 break
 
-            self._create_and_save_frame(frame_id, highlight_line=8, open_collection=open_nodes)
-            frame_id += 1
+            self._create_frame(highlight_line=8, collection_items=open_nodes)
+            self.frame_id += 1
 
             for child in self.children.get(current_node, []):
                 edge_data = self.graph.get_edge_data(current_node, child)
                 cost = edge_data['weight'] if edge_data and 'weight' in edge_data else 1
                 new_g = self.g_values[current_node] + cost
 
-                self._create_and_save_frame(frame_id, highlight_line=9, open_collection=open_nodes)
-                frame_id += 1
+                self._create_frame(highlight_line=9, collection_items=open_nodes)
+                self.frame_id += 1
 
-                if child not in open_set and child not in closed_set:
-                    self._create_and_save_frame(frame_id, highlight_line=10, open_collection=open_nodes)
-                    frame_id += 1
+                if child not in open_set and child not in self.closed_set:
+                    self._create_frame(highlight_line=10, collection_items=open_nodes)
+                    self.frame_id += 1
+
                     self.g_values[child] = new_g
-
-                    self._create_and_save_frame(frame_id, highlight_line=11, open_collection=open_nodes)
-                    frame_id += 1
+                    self._create_frame(highlight_line=11, collection_items=open_nodes)
+                    self.frame_id += 1
 
                     open_list.append((new_g, child))
                     open_set.add(child)
                     self.node_states[child] = 'blue'
-
                     open_nodes = [n for _, n in open_list]
-                    self._create_and_save_frame(frame_id, highlight_line=12, open_collection=open_nodes)
-                    frame_id += 1
 
-                self._create_and_save_frame(frame_id, highlight_line=13, open_collection=open_nodes)
-                frame_id += 1
+                    self._create_frame(highlight_line=12, collection_items=open_nodes)
+                    self.frame_id += 1
 
-                self._create_and_save_frame(frame_id, highlight_line=14, open_collection=open_nodes)
-                frame_id += 1
+                self._create_frame(highlight_line=13, collection_items=open_nodes)
+                self.frame_id += 1
+
+                self._create_frame(highlight_line=14, collection_items=open_nodes)
+                self.frame_id += 1
 
                 if child in open_set and self.g_values[child] > new_g:
-                    self._create_and_save_frame(frame_id, highlight_line=15, open_collection=open_nodes)
-                    frame_id += 1
-                    self.g_values[child] = new_g
+                    self._create_frame(highlight_line=15, collection_items=open_nodes)
+                    self.frame_id += 1
 
-                    self._create_and_save_frame(frame_id, highlight_line=16, open_collection=open_nodes)
-                    frame_id += 1
+                    self.g_values[child] = new_g
+                    self._create_frame(highlight_line=16, collection_items=open_nodes)
+                    self.frame_id += 1
 
                     for i, (old_g, node) in enumerate(open_list):
                         if node == child:
                             open_list[i] = (new_g, child)
                             break
-
                     open_nodes = [n for _, n in open_list]
 
-                self._create_and_save_frame(frame_id, highlight_line=17, open_collection=open_nodes)
-                frame_id += 1
+                self._create_frame(highlight_line=17, collection_items=open_nodes)
+                self.frame_id += 1
 
             self.node_states[current_node] = 'gray'
-            closed_set.add(current_node)
+            self.closed_set.add(current_node)
             self.visited.add(current_node)
 
-            self._create_and_save_frame(frame_id, highlight_line=18, open_collection=open_nodes)
-            frame_id += 1
+            self._create_frame(highlight_line=18, collection_items=open_nodes)
+            self.frame_id += 1
 
-            self._create_and_save_frame(frame_id, highlight_line=19, open_collection=open_nodes)
-            frame_id += 1
+            self._create_frame(highlight_line=19, collection_items=open_nodes)
+            self.frame_id += 1
 
-        if not open_list and self.goal_node not in closed_set:
-            self._create_and_save_frame(frame_id, highlight_line=21, open_collection=[])
-            frame_id += 1
+        if not open_list and self.goal_node not in self.closed_set:
+            self._create_frame(highlight_line=21, collection_items=[])
+            self.frame_id += 1

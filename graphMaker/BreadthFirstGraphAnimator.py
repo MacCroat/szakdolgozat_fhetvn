@@ -2,7 +2,6 @@ from collections import deque
 from graphMaker.GraphAnimator import GraphAnimator
 from graphMaker.CollectionRenderer import QueueRenderer
 
-
 class BreadthFirstGraphAnimator(GraphAnimator):
     def __init__(self, graph, start_node, goal_node, children):
         pseudocode = [
@@ -25,74 +24,67 @@ class BreadthFirstGraphAnimator(GraphAnimator):
             "return „Nincs megoldás"
         ]
         super().__init__(graph, pseudocode, start_node, goal_node, children)
+        self.open_collection = deque([self.start_node])
+        self.open_set = {self.start_node}
+        self.node_states[self.start_node] = 'blue'
 
     def _create_collection_renderer(self):
         return QueueRenderer()
 
-    def _create_and_save_frame(self, frame_id, highlight_line=None, memory_state=None):
-        frame_filename = f"{self.frames_dir}/frame_{frame_id:04d}.png"
-        self.create_frame(frame_filename, highlight_line, memory_state)
+    def _prepare_memory_state(self, collection_items=None):
+        if collection_items is None:
+            collection_items = list(self.open_collection)
+        return {"Nyílt": collection_items, "Zárt": self.closed_set}
 
     def generate_animation(self):
-        queue = deque([self.start_node])
-        frame_id = 0
+        self._highlight_pseudocode_lines(range(5))
 
-        memory_state = {"Nyílt": list(queue), "Zárt": set()}
-        self.node_states[self.start_node] = 'blue'
+        while self.open_collection:
+            self._create_frame(highlight_line=5)
+            self.frame_id += 1
 
-        for i in range(5):
-            self._create_and_save_frame(frame_id, highlight_line=i, memory_state=memory_state)
-            frame_id += 1
-
-        while queue:
-            self._create_and_save_frame(frame_id, highlight_line=5, memory_state=memory_state)
-            frame_id += 1
-
-            current_node = queue.popleft()
-            memory_state["Nyílt"] = list(queue)
+            current_node = self.open_collection.popleft()
+            self.open_set.remove(current_node)
             self.node_states[current_node] = 'red'
 
-            self._create_and_save_frame(frame_id, highlight_line=6, memory_state=memory_state)
-            frame_id += 1
+            self._create_frame(highlight_line=6)
+            self.frame_id += 1
 
             if current_node == self.goal_node:
-                self._create_and_save_frame(frame_id, highlight_line=7, memory_state=memory_state)
-                frame_id += 1
+                self._create_frame(highlight_line=7)
+                self.frame_id += 1
                 self.node_states[current_node] = 'green'
-                self._create_and_save_frame(frame_id, highlight_line=7, memory_state=memory_state)
+                self._create_frame(highlight_line=7)
                 break
 
-            self._create_and_save_frame(frame_id, highlight_line=8, memory_state=memory_state)
-            frame_id += 1
+            self._create_frame(highlight_line=8)
+            self.frame_id += 1
 
             for child in self.children.get(current_node, []):
-                self._create_and_save_frame(frame_id, highlight_line=9, memory_state=memory_state)
-                frame_id += 1
+                self._create_frame(highlight_line=9)
+                self.frame_id += 1
 
-                if child not in self.visited and child not in queue:
+                if child not in self.open_set and child not in self.closed_set:
                     self.node_states[child] = 'blue'
-                    queue.append(child)
-                    memory_state["Nyílt"] = list(queue)
+                    self.open_collection.append(child)
+                    self.open_set.add(child)
 
-                    self._create_and_save_frame(frame_id, highlight_line=10, memory_state=memory_state)
-                    frame_id += 1
-
-                    self._create_and_save_frame(frame_id, highlight_line=11, memory_state=memory_state)
-                    frame_id += 1
-
-                    self._create_and_save_frame(frame_id, highlight_line=12, memory_state=memory_state)
-                    frame_id += 1
+                    self._create_frame(highlight_line=10)
+                    self.frame_id += 1
+                    self._create_frame(highlight_line=11)
+                    self.frame_id += 1
+                    self._create_frame(highlight_line=12)
+                    self.frame_id += 1
 
             self.node_states[current_node] = 'gray'
+            self.closed_set.add(current_node)
             self.visited.add(current_node)
-            memory_state["Zárt"] = self.visited.copy()
 
-            self._create_and_save_frame(frame_id, highlight_line=13, memory_state=memory_state)
-            frame_id += 1
+            self._create_frame(highlight_line=13)
+            self.frame_id += 1
+            self._create_frame(highlight_line=14)
+            self.frame_id += 1
 
-            self._create_and_save_frame(frame_id, highlight_line=14, memory_state=memory_state)
-            frame_id += 1
-
-        if not queue and current_node != self.goal_node:
-            self._create_and_save_frame(frame_id, highlight_line=16, memory_state=memory_state)
-            frame_id += 1
+        if not self.open_collection and current_node != self.goal_node:
+            self._create_frame(highlight_line=16)
+            self.frame_id += 1

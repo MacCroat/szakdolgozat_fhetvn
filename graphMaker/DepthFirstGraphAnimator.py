@@ -1,5 +1,9 @@
 from graphMaker.GraphAnimator import GraphAnimator
 from graphMaker.CollectionRenderer import StackRenderer
+import matplotlib.pyplot as plt
+import networkx as nx
+import os
+
 
 class DepthFirstGraphAnimator(GraphAnimator):
     def __init__(self, graph, start_node, goal_node, children):
@@ -27,87 +31,54 @@ class DepthFirstGraphAnimator(GraphAnimator):
         self.m_values = {node: float('inf') for node in self.graph.nodes()}
         self.m_values[start_node] = 0
         self.parent = {node: None for node in self.graph.nodes()}
-
-    def get_collection_type(self):
-        return "Stack"
+        self.stack = [start_node]
+        self.node_states[start_node] = 'blue'
 
     def _create_collection_renderer(self):
         return StackRenderer()
 
-    def _create_and_save_frame(self, frame_id, highlight_line, memory_state=None):
-        self.memory_state = memory_state
+    def _create_and_save_frame(self, frame_id, highlight_line, stack_items=None, closed_items=None):
         frame_filename = f"{self.frames_dir}/frame_{frame_id:04d}.png"
+
+        memory_state = {"Nyílt": stack_items} if stack_items is not None else {}
+        if closed_items is not None:
+            memory_state["Zárt"] = closed_items
+
         self.create_frame(frame_filename, highlight_line, memory_state)
+        self.frames.append(frame_filename)
 
     def generate_animation(self):
-        stack = [self.start_node]
         frame_id = 0
+        self.stack = [self.start_node]
+        closed_set = set()
 
-        memory_state = {"Nyílt": stack.copy(), "Zárt": set()}
-
-        self._create_and_save_frame(frame_id, highlight_line=0, memory_state=memory_state)
-        frame_id += 1
-        self._create_and_save_frame(frame_id, highlight_line=1, memory_state=memory_state)
-        frame_id += 1
-        self._create_and_save_frame(frame_id, highlight_line=2, memory_state=memory_state)
-        frame_id += 1
-        self._create_and_save_frame(frame_id, highlight_line=3, memory_state=memory_state)
-        frame_id += 1
-        self._create_and_save_frame(frame_id, highlight_line=4, memory_state=memory_state)
-        frame_id += 1
-
-        while stack:
-            self._create_and_save_frame(frame_id, highlight_line=5, memory_state=memory_state)
+        for i in range(5):
+            self._create_and_save_frame(frame_id, highlight_line=i, stack_items=self.stack, closed_items=closed_set)
             frame_id += 1
 
-            current_node = stack.pop()
-            memory_state["Nyílt"] = stack.copy()  # Update stack in memory state
+        while self.stack:
+            current_node = self.stack.pop()
             self.node_states[current_node] = 'red'
 
-            self._create_and_save_frame(frame_id, highlight_line=6, memory_state=memory_state)
+            self._create_and_save_frame(frame_id, highlight_line=6, stack_items=self.stack, closed_items=closed_set)
             frame_id += 1
 
             if current_node == self.goal_node:
-                self._create_and_save_frame(frame_id, highlight_line=7, memory_state=memory_state)
-                frame_id += 1
                 self.node_states[current_node] = 'green'
-                self._create_and_save_frame(frame_id, highlight_line=7, memory_state=memory_state)
+                self._create_and_save_frame(frame_id, highlight_line=7, stack_items=self.stack, closed_items=closed_set)
                 break
 
-            self.node_states[current_node] = 'gray'
-            self.visited.add(current_node)
-            memory_state["Zárt"] = self.visited.copy()
-
-            self._create_and_save_frame(frame_id, highlight_line=8, memory_state=memory_state)
-            frame_id += 1
-
-            for child in reversed(self.children.get(current_node, [])):
-                self._create_and_save_frame(frame_id, highlight_line=9, memory_state=memory_state)
-                frame_id += 1
-
-                if child not in self.visited and child not in stack:
+            for child in self.children.get(current_node, []):
+                if child not in self.stack and child not in closed_set:
+                    self.stack.append(child)
                     self.node_states[child] = 'blue'
-                    # Add to stack immediately when detected
-                    stack.append(child)
-                    # Update memory state immediately
-                    memory_state["Nyílt"] = stack.copy()
 
-                    self._create_and_save_frame(frame_id, highlight_line=10, memory_state=memory_state)
-                    frame_id += 1
+            closed_set.add(current_node)
+            self.node_states[current_node] = 'gray'
 
-                    self._create_and_save_frame(frame_id, highlight_line=11, memory_state=memory_state)
-                    frame_id += 1
-
-                    self._create_and_save_frame(frame_id, highlight_line=12, memory_state=memory_state)
-                    frame_id += 1
-
-            self._create_and_save_frame(frame_id, highlight_line=13, memory_state=memory_state)
+            self._create_and_save_frame(frame_id, highlight_line=8, stack_items=self.stack, closed_items=closed_set)
             frame_id += 1
 
-            self._create_and_save_frame(frame_id, highlight_line=14, memory_state=memory_state)
+        if not self.stack and self.goal_node not in closed_set:
+            self._create_and_save_frame(frame_id, highlight_line=16, stack_items=self.stack, closed_items=closed_set)
             frame_id += 1
-
-        if not stack and current_node != self.goal_node:
-            self._create_and_save_frame(frame_id, highlight_line=16, memory_state=memory_state)
-            frame_id += 1
-

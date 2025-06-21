@@ -35,121 +35,115 @@ class DijkstraGraphAnimator(GraphAnimator):
         self.distances = {node: float('inf') for node in self.graph.nodes()}
         self.distances[start_node] = 0
         self.predecessors = {node: None for node in self.graph.nodes()}
+        self.closed_set = set()
 
     def _create_collection_renderer(self):
         return PriorityQueueRenderer()
 
-    def _create_and_save_frame(self, frame_id, highlight_line, pq_items=None):
-        frame_filename = f"{self.frames_dir}/frame_{frame_id:04d}.png"
+    def _prepare_memory_state(self, collection_items=None):
+        if collection_items is None or not collection_items:
+            return {"Nyílt": [], "Zárt": self.closed_set}
 
-        display_items = None
-        if pq_items is not None:
-            sorted_items = sorted(pq_items)
+        if isinstance(collection_items[0], tuple):
+            sorted_items = sorted(collection_items)
             display_items = [(f"{node}", i + 1) for i, (d, node) in enumerate(sorted_items)]
 
-            # Create value information to display node distances
             value_info = []
             for d, node in sorted_items:
                 distance = self.distances[node]
                 dist_display = int(distance) if distance.is_integer() else f"{distance:.1f}"
                 value_info.append(f"{node}:d={dist_display}")
 
-            memory_state = {"Nyílt": display_items, "Values": value_info}
+            return {"Nyílt": display_items, "Values": value_info, "Zárt": self.closed_set}
         else:
-            memory_state = None
-
-        self.create_frame(frame_filename, highlight_line, memory_state=memory_state)
+            return {"Nyílt": collection_items, "Zárt": self.closed_set}
 
     def generate_animation(self):
         pq = [(self.distances[self.start_node], self.start_node)]
         open_set = {self.start_node}
-        closed_set = set()
-        frame_id = 0
+        self.closed_set = set()
+        self.frame_id = 0
 
         self.node_states[self.start_node] = 'blue'
 
-        for i in range(6):
-            self._create_and_save_frame(frame_id, highlight_line=i, pq_items=pq)
-            frame_id += 1
+        self._highlight_pseudocode_lines(range(6))
 
         while pq:
-            self._create_and_save_frame(frame_id, highlight_line=6, pq_items=pq)
-            frame_id += 1
+            self._create_frame(highlight_line=6, collection_items=pq)
+            self.frame_id += 1
 
             pq.sort()
             current_dist, current_node = pq.pop(0)
             open_set.remove(current_node)
 
             self.node_states[current_node] = 'red'
-            self._create_and_save_frame(frame_id, highlight_line=7, pq_items=pq)
-            frame_id += 1
+            self._create_frame(highlight_line=7, collection_items=pq)
+            self.frame_id += 1
 
             if current_node == self.goal_node:
-                self._create_and_save_frame(frame_id, highlight_line=8, pq_items=pq)
-                frame_id += 1
+                self._create_frame(highlight_line=8, collection_items=pq)
+                self.frame_id += 1
                 self.node_states[current_node] = 'green'
-                self._create_and_save_frame(frame_id, highlight_line=8, pq_items=pq)
+                self._create_frame(highlight_line=8, collection_items=pq)
                 break
 
-            self._create_and_save_frame(frame_id, highlight_line=9, pq_items=pq)
-            frame_id += 1
+            self._create_frame(highlight_line=9, collection_items=pq)
+            self.frame_id += 1
 
             for child in self.children.get(current_node, []):
                 edge_data = self.graph.get_edge_data(current_node, child)
                 weight = edge_data['weight'] if edge_data and 'weight' in edge_data else 1
                 new_distance = self.distances[current_node] + weight
 
-                self._create_and_save_frame(frame_id, highlight_line=10, pq_items=pq)
-                frame_id += 1
+                self._create_frame(highlight_line=10, collection_items=pq)
+                self.frame_id += 1
 
-                if child not in open_set and child not in closed_set:
-                    self._create_and_save_frame(frame_id, highlight_line=11, pq_items=pq)
-                    frame_id += 1
+                if child not in open_set and child not in self.closed_set:
+                    self._create_frame(highlight_line=11, collection_items=pq)
+                    self.frame_id += 1
 
                     self.distances[child] = new_distance
                     self.predecessors[child] = current_node
-                    self._create_and_save_frame(frame_id, highlight_line=12, pq_items=pq)
-                    frame_id += 1
+                    self._create_frame(highlight_line=12, collection_items=pq)
+                    self.frame_id += 1
 
-                    self._create_and_save_frame(frame_id, highlight_line=13, pq_items=pq)
-                    frame_id += 1
+                    self._create_frame(highlight_line=13, collection_items=pq)
+                    self.frame_id += 1
 
                     pq.append((self.distances[child], child))
-                    pq.sort()
                     open_set.add(child)
                     self.node_states[child] = 'blue'
 
-                    self._create_and_save_frame(frame_id, highlight_line=14, pq_items=pq)
-                    frame_id += 1
+                    self._create_frame(highlight_line=14, collection_items=pq)
+                    self.frame_id += 1
 
-                self._create_and_save_frame(frame_id, highlight_line=15, pq_items=pq)
-                frame_id += 1
-
-                if child in open_set and self.distances[child] > new_distance:
-                    self._create_and_save_frame(frame_id, highlight_line=16, pq_items=pq)
-                    frame_id += 1
+                elif child in open_set and self.distances[child] > new_distance:
+                    self._create_frame(highlight_line=15, collection_items=pq)
+                    self.frame_id += 1
 
                     self.distances[child] = new_distance
                     self.predecessors[child] = current_node
-                    self._create_and_save_frame(frame_id, highlight_line=17, pq_items=pq)
-                    frame_id += 1
+                    self._create_frame(highlight_line=16, collection_items=pq)
+                    self.frame_id += 1
 
                     for i in range(len(pq)):
                         if pq[i][1] == child:
                             pq[i] = (self.distances[child], child)
                             break
-                    pq.sort()
 
-            self._create_and_save_frame(frame_id, highlight_line=19, pq_items=pq)
-            frame_id += 1
+                    self._create_frame(highlight_line=17, collection_items=pq)
+                    self.frame_id += 1
+
+            self._create_frame(highlight_line=19, collection_items=pq)
+            self.frame_id += 1
 
             self.node_states[current_node] = 'gray'
-            closed_set.add(current_node)
+            self.closed_set.add(current_node)
             self.visited.add(current_node)
 
-            self._create_and_save_frame(frame_id, highlight_line=20, pq_items=pq)
-            frame_id += 1
+            self._create_frame(highlight_line=20, collection_items=pq)
+            self.frame_id += 1
 
-        if not pq and self.goal_node not in closed_set:
-            self._create_and_save_frame(frame_id, highlight_line=22, pq_items=[])
-            frame_id += 1
+        if not pq and self.goal_node not in self.closed_set:
+            self._create_frame(highlight_line=22, collection_items=[])
+            self.frame_id += 1

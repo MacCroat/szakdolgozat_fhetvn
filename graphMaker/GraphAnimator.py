@@ -1,10 +1,9 @@
+from abc import ABC, abstractmethod
 import networkx as nx
 import matplotlib.pyplot as plt
 import os
 from PIL import Image
-from abc import ABC, abstractmethod
-from graphMaker.CollectionRenderer import StackRenderer, QueueRenderer
-from graphMaker.Graph import WeightedGraph
+
 
 class GraphAnimator(ABC):
     def __init__(self, graph, pseudocode, start_node, goal_node, children):
@@ -21,11 +20,31 @@ class GraphAnimator(ABC):
         self.frames = []
         self.node_states = {node: 'yellow' for node in self.graph.nodes()}
         self.visited = set()
+        self.frame_id = 0
+
+        self.open_collection = []
+        self.open_set = set()
+        self.closed_set = set()
+
+        self.distances = {node: float('inf') for node in self.graph.nodes()}
+        self.g_values = {node: float('inf') for node in self.graph.nodes()}
+        self.f_values = {node: float('inf') for node in self.graph.nodes()}
+        self.predecessors = {node: None for node in self.graph.nodes()}
+        self.heuristic = self._initialize_heuristic()
+
+        self.g_values[start_node] = 0
+        self.distances[start_node] = 0
+        self.f_values[start_node] = self.heuristic.get(start_node, 0)
 
         self.collection_renderer = self._create_collection_renderer()
 
         if not os.path.exists(self.frames_dir):
             os.makedirs(self.frames_dir)
+
+    def _initialize_heuristic(self):
+        if hasattr(self.graph_provider, 'get_heuristic'):
+            return self.graph_provider.get_heuristic()
+        return {node: 0 for node in self.graph.nodes()}
 
     @abstractmethod
     def _create_collection_renderer(self):
@@ -34,6 +53,23 @@ class GraphAnimator(ABC):
     @abstractmethod
     def generate_animation(self):
         pass
+
+    def _highlight_pseudocode_lines(self, lines):
+        for line in lines:
+            self._create_frame(line)
+            self.frame_id += 1
+
+    def _create_frame(self, highlight_line=None, collection_items=None):
+        frame_filename = f"{self.frames_dir}/frame_{self.frame_id:04d}.png"
+        memory_state = self._prepare_memory_state(collection_items)
+        self.create_frame(frame_filename, highlight_line, memory_state)
+        return frame_filename
+
+    def _prepare_memory_state(self, collection_items):
+        if collection_items is None:
+            return None
+
+        return {"Nyílt": collection_items}
 
     def create_frame(self, filename, highlight_line=None, memory_state=None):
         fig, ax = plt.subplots(figsize=(18, 12))
@@ -86,6 +122,16 @@ class GraphAnimator(ABC):
                 if collection:
                     self.collection_renderer.render(ax, collection)
 
+            if "Zárt" in memory_state:
+                closed_set = memory_state["Zárt"]
+                ax.text(
+                    0.1, 0.3,
+                    f"Zárt: {set(closed_set)}",
+                    fontsize=10,
+                    color='darkblue',
+                    transform=ax.transAxes
+                )
+
             if "Values" in memory_state:
                 values = memory_state["Values"]
                 for i, info in enumerate(values):
@@ -102,9 +148,6 @@ class GraphAnimator(ABC):
         plt.savefig(filename, bbox_inches="tight")
         plt.close(fig)
         self.frames.append(filename)
-
-    def get_collection_type(self):
-        return "Collection"
 
     def save_gif(self, search_type=''):
         base_dir = 'animated_graphs'
