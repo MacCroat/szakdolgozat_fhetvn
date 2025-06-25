@@ -1,8 +1,5 @@
 from graphMaker.GraphAnimator import GraphAnimator
 from graphMaker.CollectionRenderer import StackRenderer
-import matplotlib.pyplot as plt
-import networkx as nx
-import os
 
 
 class DepthFirstGraphAnimator(GraphAnimator):
