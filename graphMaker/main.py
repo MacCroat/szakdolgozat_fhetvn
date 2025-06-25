@@ -4,7 +4,8 @@ from graphMaker.OptimalGraphAnimator import OptimalGraphAnimator
 from graphMaker.DijkstraGraphAnimator import DijkstraGraphAnimator
 from graphMaker.AStarGraphAnimator import AGraphAnimator
 from graphMaker.BestFirstGraphAnimator import BestFirstGraphAnimator
-from graphMaker.Graph import BasicDirectedGraph, WeightedGraph, AGraph, BestFirstGraph
+from graphMaker.BacktrackGraphAnimator import BacktrackGraphAnimator
+from graphMaker.Graph import BasicDirectedGraph, WeightedGraph, AGraph, BestFirstGraph, OperatorGraph
 
 
 def run_search(graph, animator_class, search_type):
@@ -24,6 +25,7 @@ if __name__ == "__main__":
     weighted_graph = WeightedGraph()
     a_graph = AGraph()
     best_first_graph = BestFirstGraph()
+    operator_graph = OperatorGraph()
 
     search_algorithms = {
         'depth_first': (DepthFirstGraphAnimator, basic_graph, 'depth_first'),
@@ -31,15 +33,17 @@ if __name__ == "__main__":
         'optimal': (OptimalGraphAnimator, weighted_graph, 'optimal'),
         'dijkstra': (DijkstraGraphAnimator, a_graph, 'dijkstra_algorithm'),
         'a_star': (AGraphAnimator, a_graph, 'a_star_algorithm'),
-        'best_first': (BestFirstGraphAnimator, best_first_graph, 'best_first')
+        'best_first': (BestFirstGraphAnimator, best_first_graph, 'best_first'),
+        'backtrack': (BacktrackGraphAnimator, operator_graph, 'backtrack')
     }
 
     #active_search = 'depth_first'
-    active_search = 'breadth_first'
+    #active_search = 'breadth_first'
     #active_search = 'optimal'
     #active_search = 'dijkstra'
     #active_search = 'a_star'
     #active_search = 'best_first'
+    active_search = 'backtrack'
 
     if active_search in search_algorithms:
         animator_class, graph, search_type = search_algorithms[active_search]

@@ -279,3 +279,67 @@ class BestFirstGraph(Graph):
 
     def get_heuristic(self):
         return self.heuristic
+
+
+class OperatorGraph(Graph):
+    def __init__(self):
+        self.pos = {
+            'A': (0.5, 1),
+            'B': (0.4, 0.7),
+            'C': (0.6, 0.7),
+            'D': (0.3, 0.4),
+            'E': (0.5, 0.4),
+            'F': (0.4, 0.2),
+            'T': (0.4, 0)
+        }
+
+        self.children = {
+            'A': ['B', 'C'],
+            'B': ['D', 'E'],
+            'C': ['E'],
+            'D': ['F'],
+            'E': ['F'],
+            'F': ['T'],
+            'T': []
+        }
+
+        self.edge_operators = {
+            ('A', 'B'): 'o1',
+            ('B', 'C'): 'o1',
+            ('C', 'A'): 'o2',
+            ('B', 'D'): 'o3',
+            ('B', 'E'): 'o2',
+            ('D', 'F'): 'o2',
+            ('E', 'F'): 'o1',
+            ('F', 'T'): 'o3',
+        }
+
+        self.start_node = 'A'
+        self.goal_node = 'T'
+
+    def create_graph(self):
+        G = nx.DiGraph()
+
+        for node in self.pos:
+            G.add_node(node)
+
+        for edge, operator in self.edge_operators.items():
+            u, v = edge
+            G.add_edge(u, v, operator=operator)
+
+        return G
+
+    def get_pos(self):
+        return self.pos
+
+    def get_children(self):
+        return self.children
+
+    def get_start_node(self):
+        return self.start_node
+
+    def get_goal_node(self):
+        return self.goal_node
+
+    def get_edge_operators(self):
+        return self.edge_operators
