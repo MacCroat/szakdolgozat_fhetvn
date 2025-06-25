@@ -2,7 +2,7 @@ from graphMaker.GraphAnimator import GraphAnimator
 from graphMaker.CollectionRenderer import PriorityQueueRenderer
 
 
-class AGraphAnimator(GraphAnimator):
+class AStarGraphAnimator(GraphAnimator):
     def __init__(self, graph, start_node, goal_node, children):
         pseudocode = [
             "Startcsúcs := k",
