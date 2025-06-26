@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 class CollectionRenderer(ABC):
     def __init__(self):
         self.base_x = 0.1
-
         self.base_y = 0.6
         self.box_height = 0.06
         self.box_width = 0.1
