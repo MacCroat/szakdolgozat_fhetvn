@@ -81,7 +81,7 @@ class AStarGraphAnimator(GraphAnimator):
         self._highlight_pseudocode_lines(range(6))
 
         while pq:
-            self._create_frame(highlight_line=6, collection_items=pq)
+            self.generate_frame(highlight_line=6, collection_items=pq)
             self.frame_id += 1
 
             pq.sort()
@@ -89,17 +89,17 @@ class AStarGraphAnimator(GraphAnimator):
             open_set.remove(current_node)
 
             self.node_states[current_node] = 'red'
-            self._create_frame(highlight_line=7, collection_items=pq)
+            self.generate_frame(highlight_line=7, collection_items=pq)
             self.frame_id += 1
 
             if current_node == self.goal_node:
-                self._create_frame(highlight_line=8, collection_items=pq)
+                self.generate_frame(highlight_line=8, collection_items=pq)
                 self.frame_id += 1
                 self.node_states[current_node] = 'green'
-                self._create_frame(highlight_line=8, collection_items=pq)
+                self.generate_frame(highlight_line=8, collection_items=pq)
                 break
 
-            self._create_frame(highlight_line=9, collection_items=pq)
+            self.generate_frame(highlight_line=9, collection_items=pq)
             self.frame_id += 1
 
             for child in self.children.get(current_node, []):
@@ -107,44 +107,44 @@ class AStarGraphAnimator(GraphAnimator):
                 cost = edge_data['weight'] if edge_data and 'weight' in edge_data else 1
                 new_g = self.g_values[current_node] + cost
 
-                self._create_frame(highlight_line=10, collection_items=pq)
+                self.generate_frame(highlight_line=10, collection_items=pq)
                 self.frame_id += 1
 
                 if child not in open_set and child not in self.closed_set:
-                    self._create_frame(highlight_line=11, collection_items=pq)
+                    self.generate_frame(highlight_line=11, collection_items=pq)
                     self.frame_id += 1
 
                     self.g_values[child] = new_g
-                    self._create_frame(highlight_line=12, collection_items=pq)
+                    self.generate_frame(highlight_line=12, collection_items=pq)
                     self.frame_id += 1
 
                     self.f_values[child] = new_g + self.heuristic.get(child, 0)
-                    self._create_frame(highlight_line=13, collection_items=pq)
+                    self.generate_frame(highlight_line=13, collection_items=pq)
                     self.frame_id += 1
 
-                    self._create_frame(highlight_line=14, collection_items=pq)
+                    self.generate_frame(highlight_line=14, collection_items=pq)
                     self.frame_id += 1
 
                     pq.append((self.f_values[child], child))
                     open_set.add(child)
                     self.node_states[child] = 'blue'
 
-                    self._create_frame(highlight_line=15, collection_items=pq)
+                    self.generate_frame(highlight_line=15, collection_items=pq)
                     self.frame_id += 1
 
                 elif child in open_set and self.g_values[child] > new_g:
-                    self._create_frame(highlight_line=16, collection_items=pq)
+                    self.generate_frame(highlight_line=16, collection_items=pq)
                     self.frame_id += 1
 
                     self.g_values[child] = new_g
-                    self._create_frame(highlight_line=17, collection_items=pq)
+                    self.generate_frame(highlight_line=17, collection_items=pq)
                     self.frame_id += 1
 
-                    self._create_frame(highlight_line=18, collection_items=pq)
+                    self.generate_frame(highlight_line=18, collection_items=pq)
                     self.frame_id += 1
 
                     self.f_values[child] = new_g + self.heuristic.get(child, 0)
-                    self._create_frame(highlight_line=19, collection_items=pq)
+                    self.generate_frame(highlight_line=19, collection_items=pq)
                     self.frame_id += 1
 
                     for i in range(len(pq)):
@@ -153,41 +153,41 @@ class AStarGraphAnimator(GraphAnimator):
                             break
 
                 elif child in self.closed_set and self.g_values[child] > new_g:
-                    self._create_frame(highlight_line=20, collection_items=pq)
+                    self.generate_frame(highlight_line=20, collection_items=pq)
                     self.frame_id += 1
 
                     self.g_values[child] = new_g
-                    self._create_frame(highlight_line=21, collection_items=pq)
+                    self.generate_frame(highlight_line=21, collection_items=pq)
                     self.frame_id += 1
 
-                    self._create_frame(highlight_line=22, collection_items=pq)
+                    self.generate_frame(highlight_line=22, collection_items=pq)
                     self.frame_id += 1
 
                     self.f_values[child] = new_g + self.heuristic.get(child, 0)
-                    self._create_frame(highlight_line=23, collection_items=pq)
+                    self.generate_frame(highlight_line=23, collection_items=pq)
                     self.frame_id += 1
 
                     self.closed_set.remove(child)
-                    self._create_frame(highlight_line=24, collection_items=pq)
+                    self.generate_frame(highlight_line=24, collection_items=pq)
                     self.frame_id += 1
 
                     pq.append((self.f_values[child], child))
                     open_set.add(child)
                     self.node_states[child] = 'blue'
 
-                    self._create_frame(highlight_line=25, collection_items=pq)
+                    self.generate_frame(highlight_line=25, collection_items=pq)
                     self.frame_id += 1
 
-            self._create_frame(highlight_line=27, collection_items=pq)
+            self.generate_frame(highlight_line=27, collection_items=pq)
             self.frame_id += 1
 
             self.node_states[current_node] = 'gray'
             self.closed_set.add(current_node)
             self.visited.add(current_node)
 
-            self._create_frame(highlight_line=28, collection_items=pq)
+            self.generate_frame(highlight_line=28, collection_items=pq)
             self.frame_id += 1
 
         if not pq and self.goal_node not in self.closed_set:
-            self._create_frame(highlight_line=30, collection_items=[])
+            self.generate_frame(highlight_line=30, collection_items=[])
             self.frame_id += 1
