@@ -2,7 +2,7 @@ from graphMaker.DepthFirstGraphAnimator import DepthFirstGraphAnimator
 from graphMaker.BreadthFirstGraphAnimator import BreadthFirstGraphAnimator
 from graphMaker.OptimalGraphAnimator import OptimalGraphAnimator
 from graphMaker.DijkstraGraphAnimator import DijkstraGraphAnimator
-from graphMaker.AStarGraphAnimator import AGraphAnimator
+from graphMaker.AStarGraphAnimator import AStarGraphAnimator
 from graphMaker.BestFirstGraphAnimator import BestFirstGraphAnimator
 from graphMaker.BacktrackGraphAnimator import BacktrackGraphAnimator
 from graphMaker.Graph import BasicDirectedGraph, WeightedGraph, AGraph, BestFirstGraph, OperatorGraph
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         'breadth_first': (BreadthFirstGraphAnimator, basic_graph, 'breadth_first'),
         'optimal': (OptimalGraphAnimator, weighted_graph, 'optimal'),
         'dijkstra': (DijkstraGraphAnimator, a_graph, 'dijkstra_algorithm'),
-        'a_star': (AGraphAnimator, a_graph, 'a_star_algorithm'),
+        'a_star': (AStarGraphAnimator, a_graph, 'a_star_algorithm'),
         'best_first': (BestFirstGraphAnimator, best_first_graph, 'best_first'),
         'backtrack': (BacktrackGraphAnimator, operator_graph, 'backtrack')
     }
