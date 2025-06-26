@@ -28,16 +28,16 @@ class BreadthFirstGraphAnimator(GraphAnimator):
         self.open_set = {self.start_node}
         self.node_states[self.start_node] = 'blue'
 
-    def _create_collection_renderer(self):
+    def create_collection_renderer(self):
         return QueueRenderer()
 
-    def _prepare_memory_state(self, collection_items=None):
+    def prepare_memory_state(self, collection_items=None):
         if collection_items is None:
             collection_items = list(self.open_collection)
         return {"Nyílt": collection_items, "Zárt": self.closed_set}
 
     def generate_animation(self):
-        self._highlight_pseudocode_lines(range(5))
+        self.highlight_pseudocode_lines(range(5))
 
         while self.open_collection:
             self.generate_frame(highlight_line=5)

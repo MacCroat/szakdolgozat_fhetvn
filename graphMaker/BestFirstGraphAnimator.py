@@ -28,10 +28,10 @@ class BestFirstGraphAnimator(GraphAnimator):
         self.heuristic = graph.get_heuristic() if hasattr(graph, 'get_heuristic') else {node: 0 for node in self.graph.nodes()}
         self.closed_set = set()
 
-    def _create_collection_renderer(self):
+    def create_collection_renderer(self):
         return PriorityQueueRenderer()
 
-    def _prepare_memory_state(self, collection_items=None):
+    def prepare_memory_state(self, collection_items=None):
         if collection_items is None or not collection_items:
             return {"Nyílt": [], "Zárt": self.closed_set}
 
@@ -57,7 +57,7 @@ class BestFirstGraphAnimator(GraphAnimator):
 
         self.node_states[self.start_node] = 'blue'
 
-        self._highlight_pseudocode_lines(range(5))
+        self.highlight_pseudocode_lines(range(5))
 
         while pq:
             self.generate_frame(highlight_line=5, collection_items=pq)

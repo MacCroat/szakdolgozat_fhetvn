@@ -37,10 +37,10 @@ class DijkstraGraphAnimator(GraphAnimator):
         self.predecessors = {node: None for node in self.graph.nodes()}
         self.closed_set = set()
 
-    def _create_collection_renderer(self):
+    def create_collection_renderer(self):
         return PriorityQueueRenderer()
 
-    def _prepare_memory_state(self, collection_items=None):
+    def prepare_memory_state(self, collection_items=None):
         if collection_items is None or not collection_items:
             return {"Nyílt": [], "Zárt": self.closed_set}
 
@@ -66,7 +66,7 @@ class DijkstraGraphAnimator(GraphAnimator):
 
         self.node_states[self.start_node] = 'blue'
 
-        self._highlight_pseudocode_lines(range(6))
+        self.highlight_pseudocode_lines(range(6))
 
         while pq:
             self.generate_frame(highlight_line=6, collection_items=pq)

@@ -31,7 +31,7 @@ class DepthFirstGraphAnimator(GraphAnimator):
         self.stack = [start_node]
         self.node_states[start_node] = 'blue'
 
-    def _create_collection_renderer(self):
+    def create_collection_renderer(self):
         return StackRenderer()
 
     def _create_and_save_frame(self, frame_id, highlight_line, stack_items=None, closed_items=None):

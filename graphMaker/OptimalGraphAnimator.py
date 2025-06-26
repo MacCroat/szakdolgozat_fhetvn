@@ -32,10 +32,10 @@ class OptimalGraphAnimator(GraphAnimator):
         self.g_values = {node: float('inf') for node in self.graph.nodes()}
         self.g_values[start_node] = 0
 
-    def _create_collection_renderer(self):
+    def create_collection_renderer(self):
         return QueueRenderer()
 
-    def _prepare_memory_state(self, collection_items=None):
+    def prepare_memory_state(self, collection_items=None):
         if collection_items is None:
             return None
 
@@ -49,7 +49,7 @@ class OptimalGraphAnimator(GraphAnimator):
 
         self.node_states[self.start_node] = 'blue'
 
-        self._highlight_pseudocode_lines(range(5))
+        self.highlight_pseudocode_lines(range(5))
 
         while open_list:
             open_nodes = [n for _, n in open_list]

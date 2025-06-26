@@ -39,10 +39,10 @@ class BacktrackGraphAnimator(GraphAnimator):
         self.node_states[start_node] = 'blue'
         self.visited_children = {self.current_node: []}
 
-    def _create_collection_renderer(self):
+    def create_collection_renderer(self):
         return StackRenderer()
 
-    def _prepare_memory_state(self, path=None, closed=None):
+    def prepare_memory_state(self, path=None, closed=None):
         state = {}
         if path:
             state["Nyílt"] = path
@@ -182,6 +182,6 @@ class BacktrackGraphAnimator(GraphAnimator):
 
     def generate_frame(self, highlight_line, path, closed=None):
         frame_filename = f"{self.frames_dir}/frame_{self.frame_id:04d}.png"
-        memory_state = self._prepare_memory_state(path, closed)
+        memory_state = self.prepare_memory_state(path, closed)
         self.create_frame(frame_filename, highlight_line, memory_state)
         self.frame_id += 1

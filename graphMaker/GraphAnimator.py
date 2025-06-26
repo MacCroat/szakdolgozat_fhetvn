@@ -30,42 +30,42 @@ class GraphAnimator(ABC):
         self.g_values = {node: float('inf') for node in self.graph.nodes()}
         self.f_values = {node: float('inf') for node in self.graph.nodes()}
         self.predecessors = {node: None for node in self.graph.nodes()}
-        self.heuristic = self._initialize_heuristic()
+        self.heuristic = self.initialize_heuristic()
 
         self.g_values[start_node] = 0
         self.distances[start_node] = 0
         self.f_values[start_node] = self.heuristic.get(start_node, 0)
 
-        self.collection_renderer = self._create_collection_renderer()
+        self.collection_renderer = self.create_collection_renderer()
 
         if not os.path.exists(self.frames_dir):
             os.makedirs(self.frames_dir)
 
-    def _initialize_heuristic(self):
+    def initialize_heuristic(self):
         if hasattr(self.graph_provider, 'get_heuristic'):
             return self.graph_provider.get_heuristic()
         return {node: 0 for node in self.graph.nodes()}
 
     @abstractmethod
-    def _create_collection_renderer(self):
+    def create_collection_renderer(self):
         pass
 
     @abstractmethod
     def generate_animation(self):
         pass
 
-    def _highlight_pseudocode_lines(self, lines):
+    def highlight_pseudocode_lines(self, lines):
         for line in lines:
             self.generate_frame(line)
             self.frame_id += 1
 
     def generate_frame(self, highlight_line=None, collection_items=None):
         frame_filename = f"{self.frames_dir}/frame_{self.frame_id:04d}.png"
-        memory_state = self._prepare_memory_state(collection_items)
+        memory_state = self.prepare_memory_state(collection_items)
         self.create_frame(frame_filename, highlight_line, memory_state)
         return frame_filename
 
-    def _prepare_memory_state(self, collection_items):
+    def prepare_memory_state(self, collection_items):
         if collection_items is None:
             return None
 
