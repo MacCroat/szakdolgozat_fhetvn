@@ -38,12 +38,12 @@ if __name__ == "__main__":
     }
 
     #active_search = 'depth_first'
-    #active_search = 'breadth_first'
+    active_search = 'breadth_first'
     #active_search = 'optimal'
     #active_search = 'dijkstra'
     #active_search = 'a_star'
     #active_search = 'best_first'
-    active_search = 'backtrack'
+    #active_search = 'backtrack'
 
     if active_search in search_algorithms:
         animator_class, graph, search_type = search_algorithms[active_search]

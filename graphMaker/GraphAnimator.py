@@ -56,10 +56,10 @@ class GraphAnimator(ABC):
 
     def _highlight_pseudocode_lines(self, lines):
         for line in lines:
-            self._create_frame(line)
+            self.generate_frame(line)
             self.frame_id += 1
 
-    def _create_frame(self, highlight_line=None, collection_items=None):
+    def generate_frame(self, highlight_line=None, collection_items=None):
         frame_filename = f"{self.frames_dir}/frame_{self.frame_id:04d}.png"
         memory_state = self._prepare_memory_state(collection_items)
         self.create_frame(frame_filename, highlight_line, memory_state)

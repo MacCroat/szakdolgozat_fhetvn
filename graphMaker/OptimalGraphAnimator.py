@@ -53,7 +53,7 @@ class OptimalGraphAnimator(GraphAnimator):
 
         while open_list:
             open_nodes = [n for _, n in open_list]
-            self._create_frame(highlight_line=5, collection_items=open_nodes)
+            self.generate_frame(highlight_line=5, collection_items=open_nodes)
             self.frame_id += 1
 
             open_list.sort(key=lambda x: x[0])
@@ -62,17 +62,17 @@ class OptimalGraphAnimator(GraphAnimator):
             self.node_states[current_node] = 'red'
 
             open_nodes = [n for _, n in open_list]
-            self._create_frame(highlight_line=6, collection_items=open_nodes)
+            self.generate_frame(highlight_line=6, collection_items=open_nodes)
             self.frame_id += 1
 
             if current_node == self.goal_node:
-                self._create_frame(highlight_line=7, collection_items=open_nodes)
+                self.generate_frame(highlight_line=7, collection_items=open_nodes)
                 self.frame_id += 1
                 self.node_states[current_node] = 'green'
-                self._create_frame(highlight_line=7, collection_items=open_nodes)
+                self.generate_frame(highlight_line=7, collection_items=open_nodes)
                 break
 
-            self._create_frame(highlight_line=8, collection_items=open_nodes)
+            self.generate_frame(highlight_line=8, collection_items=open_nodes)
             self.frame_id += 1
 
             for child in self.children.get(current_node, []):
@@ -80,15 +80,15 @@ class OptimalGraphAnimator(GraphAnimator):
                 cost = edge_data['weight'] if edge_data and 'weight' in edge_data else 1
                 new_g = self.g_values[current_node] + cost
 
-                self._create_frame(highlight_line=9, collection_items=open_nodes)
+                self.generate_frame(highlight_line=9, collection_items=open_nodes)
                 self.frame_id += 1
 
                 if child not in open_set and child not in self.closed_set:
-                    self._create_frame(highlight_line=10, collection_items=open_nodes)
+                    self.generate_frame(highlight_line=10, collection_items=open_nodes)
                     self.frame_id += 1
 
                     self.g_values[child] = new_g
-                    self._create_frame(highlight_line=11, collection_items=open_nodes)
+                    self.generate_frame(highlight_line=11, collection_items=open_nodes)
                     self.frame_id += 1
 
                     open_list.append((new_g, child))
@@ -96,21 +96,21 @@ class OptimalGraphAnimator(GraphAnimator):
                     self.node_states[child] = 'blue'
                     open_nodes = [n for _, n in open_list]
 
-                    self._create_frame(highlight_line=12, collection_items=open_nodes)
+                    self.generate_frame(highlight_line=12, collection_items=open_nodes)
                     self.frame_id += 1
 
-                self._create_frame(highlight_line=13, collection_items=open_nodes)
+                self.generate_frame(highlight_line=13, collection_items=open_nodes)
                 self.frame_id += 1
 
-                self._create_frame(highlight_line=14, collection_items=open_nodes)
+                self.generate_frame(highlight_line=14, collection_items=open_nodes)
                 self.frame_id += 1
 
                 if child in open_set and self.g_values[child] > new_g:
-                    self._create_frame(highlight_line=15, collection_items=open_nodes)
+                    self.generate_frame(highlight_line=15, collection_items=open_nodes)
                     self.frame_id += 1
 
                     self.g_values[child] = new_g
-                    self._create_frame(highlight_line=16, collection_items=open_nodes)
+                    self.generate_frame(highlight_line=16, collection_items=open_nodes)
                     self.frame_id += 1
 
                     for i, (old_g, node) in enumerate(open_list):
@@ -119,19 +119,19 @@ class OptimalGraphAnimator(GraphAnimator):
                             break
                     open_nodes = [n for _, n in open_list]
 
-                self._create_frame(highlight_line=17, collection_items=open_nodes)
+                self.generate_frame(highlight_line=17, collection_items=open_nodes)
                 self.frame_id += 1
 
             self.node_states[current_node] = 'gray'
             self.closed_set.add(current_node)
             self.visited.add(current_node)
 
-            self._create_frame(highlight_line=18, collection_items=open_nodes)
+            self.generate_frame(highlight_line=18, collection_items=open_nodes)
             self.frame_id += 1
 
-            self._create_frame(highlight_line=19, collection_items=open_nodes)
+            self.generate_frame(highlight_line=19, collection_items=open_nodes)
             self.frame_id += 1
 
         if not open_list and self.goal_node not in self.closed_set:
-            self._create_frame(highlight_line=21, collection_items=[])
+            self.generate_frame(highlight_line=21, collection_items=[])
             self.frame_id += 1
