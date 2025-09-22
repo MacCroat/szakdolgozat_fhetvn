@@ -1,5 +1,6 @@
 from graphMaker.GraphAnimator import GraphAnimator
 from graphMaker.CollectionRenderer import PriorityQueueRenderer
+from graphMaker.ENodeStateColors import ENodeStateColors
 
 
 class BestFirstGraphAnimator(GraphAnimator):
@@ -55,7 +56,7 @@ class BestFirstGraphAnimator(GraphAnimator):
         self.closed_set = set()
         self.frame_id = 0
 
-        self.node_states[self.start_node] = 'blue'
+        self.node_states[self.start_node] = ENodeStateColors.OPEN
 
         self.highlight_pseudocode_lines(range(5))
 
@@ -67,14 +68,14 @@ class BestFirstGraphAnimator(GraphAnimator):
             current_h, current_node = pq.pop(0)
             open_set.remove(current_node)
 
-            self.node_states[current_node] = 'red'
+            self.node_states[current_node] = ENodeStateColors.CURRENT
             self.generate_frame(highlight_line=6, collection_items=pq)
             self.frame_id += 1
 
             if current_node == self.goal_node:
                 self.generate_frame(highlight_line=7, collection_items=pq)
                 self.frame_id += 1
-                self.node_states[current_node] = 'green'
+                self.node_states[current_node] = ENodeStateColors.GOAL
                 self.generate_frame(highlight_line=7, collection_items=pq)
                 break
 
@@ -97,7 +98,7 @@ class BestFirstGraphAnimator(GraphAnimator):
 
                     pq.append((self.heuristic.get(child, 0), child))
                     open_set.add(child)
-                    self.node_states[child] = 'blue'
+                    self.node_states[child] = ENodeStateColors.OPEN
 
                     self.generate_frame(highlight_line=13, collection_items=pq)
                     self.frame_id += 1
@@ -105,7 +106,7 @@ class BestFirstGraphAnimator(GraphAnimator):
             self.generate_frame(highlight_line=14, collection_items=pq)
             self.frame_id += 1
 
-            self.node_states[current_node] = 'gray'
+            self.node_states[current_node] = ENodeStateColors.GOAL
             self.closed_set.add(current_node)
             self.visited.add(current_node)
 

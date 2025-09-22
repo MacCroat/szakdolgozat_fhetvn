@@ -3,6 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import os
 from PIL import Image
+from graphMaker.ENodeStateColors import ENodeStateColors
 
 
 class GraphAnimator(ABC):
@@ -18,7 +19,7 @@ class GraphAnimator(ABC):
 
         self.frames_dir = 'graph_frames'
         self.frames = []
-        self.node_states = {node: 'yellow' for node in self.graph.nodes()}
+        self.node_states = {node: ENodeStateColors.UNVISITED for node in self.graph.nodes()}
         self.visited = set()
         self.frame_id = 0
 
@@ -82,7 +83,8 @@ class GraphAnimator(ABC):
             self.pos,
             ax=ax,
             labels={n: n for n in self.graph.nodes()},
-            node_color=[self.node_states[node] for node in self.graph.nodes()],
+            node_color=[(s.value if isinstance(s, ENodeStateColors) else s)
+                        for s in (self.node_states[node] for node in self.graph.nodes())],
             node_size=1000,
             with_labels=True,
             font_color='red',

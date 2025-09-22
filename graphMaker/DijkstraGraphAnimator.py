@@ -1,5 +1,6 @@
 from graphMaker.GraphAnimator import GraphAnimator
 from graphMaker.CollectionRenderer import PriorityQueueRenderer
+from graphMaker.ENodeStateColors import ENodeStateColors
 
 
 class DijkstraGraphAnimator(GraphAnimator):
@@ -64,7 +65,7 @@ class DijkstraGraphAnimator(GraphAnimator):
         self.closed_set = set()
         self.frame_id = 0
 
-        self.node_states[self.start_node] = 'blue'
+        self.node_states[self.start_node] = ENodeStateColors.OPEN
 
         self.highlight_pseudocode_lines(range(6))
 
@@ -76,14 +77,14 @@ class DijkstraGraphAnimator(GraphAnimator):
             current_dist, current_node = pq.pop(0)
             open_set.remove(current_node)
 
-            self.node_states[current_node] = 'red'
+            self.node_states[current_node] = ENodeStateColors.CURRENT
             self.generate_frame(highlight_line=7, collection_items=pq)
             self.frame_id += 1
 
             if current_node == self.goal_node:
                 self.generate_frame(highlight_line=8, collection_items=pq)
                 self.frame_id += 1
-                self.node_states[current_node] = 'green'
+                self.node_states[current_node] = ENodeStateColors.GOAL
                 self.generate_frame(highlight_line=8, collection_items=pq)
                 break
 
@@ -112,7 +113,7 @@ class DijkstraGraphAnimator(GraphAnimator):
 
                     pq.append((self.distances[child], child))
                     open_set.add(child)
-                    self.node_states[child] = 'blue'
+                    self.node_states[child] = ENodeStateColors.OPEN
 
                     self.generate_frame(highlight_line=14, collection_items=pq)
                     self.frame_id += 1
@@ -137,7 +138,7 @@ class DijkstraGraphAnimator(GraphAnimator):
             self.generate_frame(highlight_line=19, collection_items=pq)
             self.frame_id += 1
 
-            self.node_states[current_node] = 'gray'
+            self.node_states[current_node] = ENodeStateColors.CLOSED
             self.closed_set.add(current_node)
             self.visited.add(current_node)
 

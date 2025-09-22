@@ -1,5 +1,6 @@
 from graphMaker.GraphAnimator import GraphAnimator
 from graphMaker.CollectionRenderer import StackRenderer
+from graphMaker.ENodeStateColors import ENodeStateColors
 
 
 class DepthFirstGraphAnimator(GraphAnimator):
@@ -29,7 +30,7 @@ class DepthFirstGraphAnimator(GraphAnimator):
         self.m_values[start_node] = 0
         self.parent = {node: None for node in self.graph.nodes()}
         self.stack = [start_node]
-        self.node_states[start_node] = 'blue'
+        self.node_states[start_node] = ENodeStateColors.OPEN
 
     def create_collection_renderer(self):
         return StackRenderer()
@@ -55,23 +56,23 @@ class DepthFirstGraphAnimator(GraphAnimator):
 
         while self.stack:
             current_node = self.stack.pop()
-            self.node_states[current_node] = 'red'
+            self.node_states[current_node] = ENodeStateColors.CURRENT
 
             self._create_and_save_frame(frame_id, highlight_line=6, stack_items=self.stack, closed_items=closed_set)
             frame_id += 1
 
             if current_node == self.goal_node:
-                self.node_states[current_node] = 'green'
+                self.node_states[current_node] = ENodeStateColors.GOAL
                 self._create_and_save_frame(frame_id, highlight_line=7, stack_items=self.stack, closed_items=closed_set)
                 break
 
             for child in self.children.get(current_node, []):
                 if child not in self.stack and child not in closed_set:
                     self.stack.append(child)
-                    self.node_states[child] = 'blue'
+                    self.node_states[child] = ENodeStateColors.OPEN
 
             closed_set.add(current_node)
-            self.node_states[current_node] = 'gray'
+            self.node_states[current_node] = ENodeStateColors.CLOSED
 
             self._create_and_save_frame(frame_id, highlight_line=8, stack_items=self.stack, closed_items=closed_set)
             frame_id += 1

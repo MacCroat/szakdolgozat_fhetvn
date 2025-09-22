@@ -2,6 +2,7 @@ from graphMaker.GraphAnimator import GraphAnimator
 from graphMaker.CollectionRenderer import StackRenderer
 import matplotlib.pyplot as plt
 import networkx as nx
+from graphMaker.ENodeStateColors import ENodeStateColors
 
 
 class BacktrackGraphAnimator(GraphAnimator):
@@ -36,7 +37,7 @@ class BacktrackGraphAnimator(GraphAnimator):
 
         self.current_node = start_node
         self.path = [start_node]
-        self.node_states[start_node] = 'blue'
+        self.node_states[start_node] = ENodeStateColors.OPEN
         self.visited_children = {self.current_node: []}
 
     def create_collection_renderer(self):
@@ -145,11 +146,12 @@ class BacktrackGraphAnimator(GraphAnimator):
         while stack:
             current_node, children_iter = stack[-1]
             self.current_node = current_node
-            self.node_states = {node: 'gray' if node in closed else 'yellow' for node in self.graph.nodes()}
+            self.node_states = {node: (ENodeStateColors.CLOSED if node in closed else ENodeStateColors.UNVISITED)  # CHANGED
+                            for node in self.graph.nodes()}
             for n in self.path:
                 if n not in closed:
-                    self.node_states[n] = 'blue'
-            self.node_states[current_node] = 'blue'
+                    self.node_states[n] = ENodeStateColors.OPEN
+            self.node_states[current_node] = ENodeStateColors.OPEN
             self.generate_frame(4, list(self.path), closed=closed)
 
             if current_node == self.goal_node:
@@ -164,12 +166,12 @@ class BacktrackGraphAnimator(GraphAnimator):
                     self.generate_frame(7, list(self.path), closed=closed)
                     self.path.append(child)
                     stack.append((child, iter(self.children.get(child, []))))
-                    self.node_states[child] = 'blue'
+                    self.node_states[child] = ENodeStateColors.OPEN
                     self.generate_frame(8, list(self.path), closed=closed)
                     self.generate_frame(9, list(self.path), closed=closed)
             except StopIteration:
                 closed.add(current_node)
-                self.node_states[current_node] = 'gray'
+                self.node_states[current_node] = ENodeStateColors.CLOSED
                 self.generate_frame(13, list(self.path), closed=closed)
                 self.generate_frame(14, list(self.path), closed=closed)
                 stack.pop()
@@ -177,7 +179,7 @@ class BacktrackGraphAnimator(GraphAnimator):
                     self.path.pop()
 
         if found:
-            self.node_states[self.current_node] = 'green'
+            self.node_states[self.current_node] = ENodeStateColors.GOAL
             self.generate_frame(15, list(self.path), closed=closed)
 
     def generate_frame(self, highlight_line, path, closed=None):

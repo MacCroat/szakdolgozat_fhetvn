@@ -1,6 +1,7 @@
 from collections import deque
 from graphMaker.GraphAnimator import GraphAnimator
 from graphMaker.CollectionRenderer import QueueRenderer
+from graphMaker.ENodeStateColors import ENodeStateColors
 
 class BreadthFirstGraphAnimator(GraphAnimator):
     def __init__(self, graph, start_node, goal_node, children):
@@ -26,7 +27,7 @@ class BreadthFirstGraphAnimator(GraphAnimator):
         super().__init__(graph, pseudocode, start_node, goal_node, children)
         self.open_collection = deque([self.start_node])
         self.open_set = {self.start_node}
-        self.node_states[self.start_node] = 'blue'
+        self.node_states[self.start_node] = ENodeStateColors.OPEN
 
     def create_collection_renderer(self):
         return QueueRenderer()
@@ -45,7 +46,7 @@ class BreadthFirstGraphAnimator(GraphAnimator):
 
             current_node = self.open_collection.popleft()
             self.open_set.remove(current_node)
-            self.node_states[current_node] = 'red'
+            self.node_states[current_node] = ENodeStateColors.CURRENT
 
             self.generate_frame(highlight_line=6)
             self.frame_id += 1
@@ -53,7 +54,7 @@ class BreadthFirstGraphAnimator(GraphAnimator):
             if current_node == self.goal_node:
                 self.generate_frame(highlight_line=7)
                 self.frame_id += 1
-                self.node_states[current_node] = 'green'
+                self.node_states[current_node] = ENodeStateColors.GOAL
                 self.generate_frame(highlight_line=7)
                 break
 
@@ -65,7 +66,7 @@ class BreadthFirstGraphAnimator(GraphAnimator):
                 self.frame_id += 1
 
                 if child not in self.open_set and child not in self.closed_set:
-                    self.node_states[child] = 'blue'
+                    self.node_states[child] = ENodeStateColors.OPEN
                     self.open_collection.append(child)
                     self.open_set.add(child)
 
@@ -76,7 +77,7 @@ class BreadthFirstGraphAnimator(GraphAnimator):
                     self.generate_frame(highlight_line=12)
                     self.frame_id += 1
 
-            self.node_states[current_node] = 'gray'
+            self.node_states[current_node] = ENodeStateColors.CLOSED
             self.closed_set.add(current_node)
             self.visited.add(current_node)
 
