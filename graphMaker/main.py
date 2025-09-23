@@ -1,10 +1,10 @@
-from graphMaker.DepthFirstGraphAnimator import DepthFirstGraphAnimator
-from graphMaker.BreadthFirstGraphAnimator import BreadthFirstGraphAnimator
-from graphMaker.OptimalGraphAnimator import OptimalGraphAnimator
-from graphMaker.DijkstraGraphAnimator import DijkstraGraphAnimator
-from graphMaker.AStarGraphAnimator import AStarGraphAnimator
-from graphMaker.BestFirstGraphAnimator import BestFirstGraphAnimator
-from graphMaker.BacktrackGraphAnimator import BacktrackGraphAnimator
+from graphMaker.Animators.DepthFirstGraphAnimator import DepthFirstGraphAnimator
+from graphMaker.Animators.BreadthFirstGraphAnimator import BreadthFirstGraphAnimator
+from graphMaker.Animators.OptimalGraphAnimator import OptimalGraphAnimator
+from graphMaker.Animators.DijkstraGraphAnimator import DijkstraGraphAnimator
+from graphMaker.Animators.AStarGraphAnimator import AStarGraphAnimator
+from graphMaker.Animators.BestFirstGraphAnimator import BestFirstGraphAnimator
+from graphMaker.Animators.BacktrackGraphAnimator import BacktrackGraphAnimator
 from graphMaker.Graph import BasicDirectedGraph, WeightedGraph, AGraph, BestFirstGraph, OperatorGraph
 
 
@@ -37,13 +37,13 @@ if __name__ == "__main__":
         'backtrack': (BacktrackGraphAnimator, operator_graph, 'backtrack')
     }
 
-    #active_search = 'depth_first'
+    active_search = 'depth_first'
     #active_search = 'breadth_first'
     #active_search = 'optimal'
     #active_search = 'dijkstra'
     #active_search = 'a_star'
     #active_search = 'best_first'
-    active_search = 'backtrack'
+    #active_search = 'backtrack'
 
     if active_search in search_algorithms:
         animator_class, graph, search_type = search_algorithms[active_search]
