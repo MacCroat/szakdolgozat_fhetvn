@@ -1,5 +1,5 @@
 from collections import deque
-from graphMaker.GraphAnimator import GraphAnimator
+from graphMaker.GraphAnimator.GraphAnimator import GraphAnimator
 from graphMaker.CollectionRenderer import QueueRenderer
 from graphMaker.ENodeStateColors import ENodeStateColors
 

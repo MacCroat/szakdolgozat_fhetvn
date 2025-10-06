@@ -1,4 +1,4 @@
-from graphMaker.GraphAnimator import GraphAnimator
+from graphMaker.GraphAnimator.GraphAnimator import GraphAnimator
 from graphMaker.CollectionRenderer import StackRenderer
 from graphMaker.ENodeStateColors import ENodeStateColors
 
