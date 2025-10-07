@@ -18,7 +18,6 @@ class FrameExporter:
             raise RuntimeError("No frames to export")
 
         images = [Image.open(f) for f in self.frames]
-        name = filename if filename.lower().endswith(".gif") else f"{filename}.gif"
         gif_path = os.path.join(self.out_dir, filename)
 
         images[0].save(
