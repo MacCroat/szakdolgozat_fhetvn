@@ -32,60 +32,44 @@ class BreadthFirstGraphAnimator(GraphAnimator):
     def create_collection_renderer(self):
         return QueueRenderer()
 
-    def prepare_memory_state(self, collection_items=None):
-        if collection_items is None:
-            collection_items = list(self.open_collection)
-        return {"Nyílt": collection_items, "Zárt": self.closed_set}
-
     def generate_animation(self):
         self.highlight_pseudocode_lines(range(5))
 
         while self.open_collection:
-            self.generate_frame(highlight_line=5)
-            self.frame_id += 1
+            self.generate_frame(highlight_line=5, open_items=list(self.open_collection), closed=self.closed_set)
 
             current_node = self.open_collection.popleft()
             self.open_set.remove(current_node)
             self.node_states[current_node] = ENodeStateColors.CURRENT
 
-            self.generate_frame(highlight_line=6)
-            self.frame_id += 1
+            self.generate_frame(highlight_line=6, open_items=list(self.open_collection), closed=self.closed_set)
 
             if current_node == self.goal_node:
-                self.generate_frame(highlight_line=7)
-                self.frame_id += 1
+                self.generate_frame(highlight_line=7, open_items=list(self.open_collection), closed=self.closed_set)
                 self.node_states[current_node] = ENodeStateColors.GOAL
-                self.generate_frame(highlight_line=7)
+                self.generate_frame(highlight_line=7, open_items=list(self.open_collection), closed=self.closed_set)
                 break
 
-            self.generate_frame(highlight_line=8)
-            self.frame_id += 1
+            self.generate_frame(highlight_line=8, open_items=list(self.open_collection), closed=self.closed_set)
 
             for child in self.children.get(current_node, []):
-                self.generate_frame(highlight_line=9)
-                self.frame_id += 1
+                self.generate_frame(highlight_line=9, open_items=list(self.open_collection), closed=self.closed_set)
 
                 if child not in self.open_set and child not in self.closed_set:
                     self.node_states[child] = ENodeStateColors.OPEN
                     self.open_collection.append(child)
                     self.open_set.add(child)
 
-                    self.generate_frame(highlight_line=10)
-                    self.frame_id += 1
-                    self.generate_frame(highlight_line=11)
-                    self.frame_id += 1
-                    self.generate_frame(highlight_line=12)
-                    self.frame_id += 1
+                    self.generate_frame(highlight_line=10, open_items=list(self.open_collection), closed=self.closed_set)
+                    self.generate_frame(highlight_line=11, open_items=list(self.open_collection), closed=self.closed_set)
+                    self.generate_frame(highlight_line=12, open_items=list(self.open_collection), closed=self.closed_set)
 
             self.node_states[current_node] = ENodeStateColors.CLOSED
             self.closed_set.add(current_node)
             self.visited.add(current_node)
 
-            self.generate_frame(highlight_line=13)
-            self.frame_id += 1
-            self.generate_frame(highlight_line=14)
-            self.frame_id += 1
+            self.generate_frame(highlight_line=13, open_items=list(self.open_collection), closed=self.closed_set)
+            self.generate_frame(highlight_line=14, open_items=list(self.open_collection), closed=self.closed_set)
 
         if not self.open_collection and current_node != self.goal_node:
-            self.generate_frame(highlight_line=16)
-            self.frame_id += 1
+            self.generate_frame(highlight_line=16, open_items=[], closed=self.closed_set)

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Iterable, Set
 from graphMaker.ENodeStateColors import ENodeStateColors
 from graphMaker.GraphAnimator.FrameRenderer import FrameRenderer
 from graphMaker.GraphAnimator.FrameExporter import FrameExporter
@@ -38,21 +38,36 @@ class GraphAnimator(ABC):
     def generate_animation(self):
         pass
 
-    def highlight_pseudocode_lines(self, lines):
+    def highlight_pseudocode_lines(self, lines: Iterable[int]):
         for line in lines:
-            self.generate_frame(line)
+            self.generate_frame(highlight_line=line)
 
-    def generate_frame(self, highlight_line: Optional[int] = None, collection_items: Optional[Any] = None):
+    def generate_frame(
+        self,
+        highlight_line: Optional[int] = None,
+        open_items: Optional[Any] = None,
+        values: Optional[Any] = None,
+        closed: Optional[Set[Any]] = None
+    ):
         frame_filename = f"{self.frames_dir}/frame_{self.frame_id:04d}.png"
-        memory_state = self.prepare_memory_state(collection_items)
+        memory_state = self.prepare_memory_state(open_items=open_items, values=values, closed=closed)
         self.create_frame(frame_filename, highlight_line, memory_state)
         self.frame_id += 1
         return frame_filename
 
-    def prepare_memory_state(self, collection_items: Optional[Any]) -> Optional[Dict[str, Any]]:
-        if collection_items is None:
-            return None
-        return {"Nyílt": collection_items}
+    def prepare_memory_state(
+        self,
+        open_items: Optional[Any] = None,
+        values: Optional[Any] = None,
+        closed: Optional[Set[Any]] = None
+    ) -> Optional[Dict[str, Any]]:
+        state: Dict[str, Any] = {
+            "Nyílt": open_items if open_items is not None else [],
+            "Zárt": closed if closed is not None else self.closed_set
+        }
+        if values is not None:
+            state["Values"] = values
+        return state
 
     def create_frame(self, filename, highlight_line=None, memory_state=None):
         path = self.renderer.render(
