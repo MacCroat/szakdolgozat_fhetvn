@@ -106,7 +106,7 @@ class BestFirstGraphAnimator(GraphAnimator):
             self.generate_frame(highlight_line=14, collection_items=pq)
             self.frame_id += 1
 
-            self.node_states[current_node] = ENodeStateColors.GOAL
+            self.node_states[current_node] = ENodeStateColors.CLOSED
             self.closed_set.add(current_node)
             self.visited.add(current_node)
 
