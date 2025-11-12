@@ -13,10 +13,8 @@ from graphMaker.ENodeStateColors import ENodeStateColors
 
 class AnimatorTestMixin:
     def patch_renderer(self):
-        # Patch GraphAnimator.create_frame to avoid matplotlib/PIL work during tests
         patcher = patch('graphMaker.GraphAnimator.GraphAnimator.GraphAnimator.create_frame', autospec=True)
         mocked = patcher.start()
-        # Register cleanup only if self has addCleanup (i.e., is a TestCase instance)
         if hasattr(self, 'addCleanup'):
             self.addCleanup(patcher.stop)
         mocked.side_effect = lambda self_ref, filename, highlight_line=None, memory_state=None: self_ref.frames.append(
@@ -33,11 +31,8 @@ class TestBreadthFirstAnimator(unittest.TestCase, AnimatorTestMixin):
         animator = BreadthFirstGraphAnimator(g, g.get_start_node(), g.get_goal_node(), g.get_children())
         animator.generate_animation()
 
-        # Goal should be marked as GOAL
         self.assertEqual(animator.node_states[g.get_goal_node()], ENodeStateColors.GOAL)
-        # Start should be processed and placed into closed set
         self.assertIn(g.get_start_node(), animator.closed_set)
-        # Some path node should also be closed (F is on all paths to T)
         self.assertIn('F', animator.closed_set)
 
 
@@ -49,7 +44,6 @@ class TestDepthFirstAnimator(unittest.TestCase, AnimatorTestMixin):
         g = BasicDirectedGraph()
         animator = DepthFirstGraphAnimator(g, g.get_start_node(), g.get_goal_node(), g.get_children())
         animator.generate_animation()
-        # At least one node should be CLOSED or GOAL
         any_closed_or_goal = any(state in (ENodeStateColors.CLOSED, ENodeStateColors.GOAL) for state in animator.node_states.values())
         self.assertTrue(any_closed_or_goal)
 
